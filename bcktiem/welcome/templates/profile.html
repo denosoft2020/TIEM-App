@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@{{ user.username }} | Tiem</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-pic-container">
+                <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="profile-pic">
+            </div>
+            
+            <div class="profile-info">
+                <h1 class="username">@{{ user.username }}</h1>
+                
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-number">{{ posts_count }}</span>
+                        <span class="stat-label">Posts</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ profile.followers_count }}</span>
+                        <span class="stat-label">Followers</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ profile.following_count }}</span>
+                        <span class="stat-label">Following</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ likes_count }}</span>
+                        <span class="stat-label">Likes</span>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    {% if request.user == user %}
+                    <button class="edit-profile-btn" onclick="window.location.href='{% url 'edit-profile' %}'">
+                        Edit Profile
+                    </button>
+                    {% else %}
+                    <button class="follow-btn" data-user-id="{{ user.id }}">
+                        {% if request.user in profile.followers.all %}Following{% else %}Follow{% endif %}
+                    </button>
+                    {% endif %}
+                    <button class="share-profile-btn">
+                        Share Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bio Section -->
+        <div class="bio-section">
+            <h2 class="display-name">{{ user.get_full_name }}</h2>
+            <p class="bio">{{ profile.bio }}</p>
+            
+            <div class="profile-links">
+                {% if profile.website %}
+                <a href="{{ profile.website }}" target="_blank">
+                    <i class="fas fa-link"></i> {{ profile.website }}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Pinned Posts -->
+        {% if pinned_posts %}
+        <div class="pinned-section">
+            <h3 class="section-title">Pinned</h3>
+            {% for post in pinned_posts %}
+            <div class="pinned-post">
+                <p>{{ post.caption }}</p>
+                <div class="post-stats">
+                    <span>{{ post.like_count }} likes</span>
+                    <span>{{ post.comments.count }} comments</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Posts Grid -->
+        <div class="posts-grid">
+            {% for post in posts %}
+            <div class="post-item">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" alt="Post Image">
+                {% elif post.video %}
+                <video src="{{ post.video.url }}" muted loop></video>
+                {% endif %}
+                <div class="post-overlay">
+                    <span><i class="fas fa-heart"></i> {{ post.like_count }}</span>
+                    <span><i class="fas fa-comment"></i> {{ post.comments.count }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-posts">
+                <i class="fas fa-camera"></i>
+                <p>No posts yet</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'feed' %}"><i class="fas fa-home"></i></a>
+        <a href="{% url 'notifications' %}"><i class="fas fa-heart"></i></a>
+        <a href="{% url 'profile' request.user.username %}"><i class="fas fa-user"></i></a>
+    </nav>
+
+    <script src="{% static 'js/profile.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video or Image</title>
+    <link rel="stylesheet" href="{% static 'css/upload.css' %}">
+    <script defer src="{% static 'js/upload.js' %}"></script>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload Your Post</h1>
+        <form id="upload-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="preview-container">
+                <video id="preview-video" controls class="hidden"></video>
+                <img id="preview-image" class="hidden" alt="Preview">
+            </div>
+            <input type="file" id="media-input" name="media" accept="image/*,video/*" required>
+            <div class="filter-options">
+                <label>Apply Filter:</label>
+                <select name="filter" id="filter-select">
+                    <option value="">None</option>
+                    <option value="grayscale">Grayscale</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="invert">Invert</option>
+                </select>
+            </div>
+            <div class="duration-container">
+                <label for="duration">Duration (seconds):</label>
+                <input type="number" id="duration" name="duration" min="1" max="60" value="15">
+            </div>
+            <button type="submit" id="upload-btn">Post</button>
+        </form>
+    </div>
+</body>
+</html>
